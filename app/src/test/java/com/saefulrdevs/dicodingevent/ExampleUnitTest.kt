@@ -1,4 +1,4 @@
-package com.saefulrdevs.eventmanagement
+package com.saefulrdevs.dicodingevent
 
 import org.junit.Test
 

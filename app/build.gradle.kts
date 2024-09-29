@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.saefulrdevs.eventmanagement"
+    namespace = "com.saefulrdevs.dicodingevent"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.saefulrdevs.eventmanagement"
+        applicationId = "com.saefulrdevs.dicodingevent"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -27,11 +27,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
     buildFeatures {
         viewBinding = true
@@ -51,4 +51,14 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.activity.ktx)
+
+    // retrofit
+    implementation(libs.glide)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.converter.gson)
+    implementation(libs.logging.interceptor)
+
+    // shimmering loading
+    implementation (libs.shimmer)
 }

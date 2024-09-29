@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.saefulrdevs.eventmanagement.ui.home.HomeFragment"
+        android:name="com.saefulrdevs.dicodingevent.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.saefulrdevs.eventmanagement.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_upcoming_event"
+        android:name="com.saefulrdevs.dicodingevent.ui.upcoming_event.UpcomingEventFragment"
+        android:label="@string/title_upcoming_event"
+        tools:layout="@layout/fragment_upcoming_event" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.saefulrdevs.eventmanagement.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_finished_event"
+        android:name="com.saefulrdevs.dicodingevent.ui.finished_event.FinishedEventFragment"
+        android:label="@string/title_finished_event"
+        tools:layout="@layout/fragment_finished_event" />
 </navigation>

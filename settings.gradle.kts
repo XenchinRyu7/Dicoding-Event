@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Event Management"
+rootProject.name = "Dicoding Event"
 include(":app")

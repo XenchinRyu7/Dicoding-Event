@@ -1,6 +1,10 @@
 <resources>
-    <string name="app_name">Event Management</string>
+    <string name="app_name">Dicoding Event</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_upcoming_event">Upcoming Event</string>
+    <string name="title_finished_event">Finished Event</string>
+    <string name="title_dicodingEvent">Dicoding Event</string>
+    <string name="title_recommendation_event">Recommendation event for you!</string>
+    <string name="search_event">Cari Event</string>
+    <string name="image_event">Gambar Acara</string>
 </resources>
