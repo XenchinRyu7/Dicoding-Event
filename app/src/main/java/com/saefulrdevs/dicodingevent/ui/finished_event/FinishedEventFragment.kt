@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.saefulrdevs.dicodingevent.data.response.ListEventsItem
+import com.saefulrdevs.dicodingevent.R
 import com.saefulrdevs.dicodingevent.databinding.FragmentFinishedEventBinding
 import com.saefulrdevs.dicodingevent.viewmodel.AdapterVerticalEvent
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
@@ -18,8 +18,8 @@ class FinishedEventFragment : Fragment() {
 
     private var _binding: FragmentFinishedEventBinding? = null
     private val binding get() = _binding!!
-
     private val mainViewModel by viewModels<MainViewModel>()
+    private lateinit var adapterVertical: AdapterVerticalEvent
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,47 +28,62 @@ class FinishedEventFragment : Fragment() {
     ): View {
         _binding = FragmentFinishedEventBinding.inflate(inflater, container, false)
 
-        with(binding) {
-            searchView.setupWithSearchBar(searchBar)
-            searchView
-                .editText
-                .setOnEditorActionListener { textView, actionId, event ->
-                    searchBar.setText(searchView.text)
-                    searchView.hide()
-                    Toast.makeText(requireContext(), searchView.text, Toast.LENGTH_SHORT).show()
-                    false
-                }
-        }
+        setupSearchView()
+        setupRecyclerView()
 
-        val verticalLayout = LinearLayoutManager(requireContext())
-        binding.rvFinishedEvent.layoutManager = verticalLayout
-        val itemUpcomingEventDecoration =
-            DividerItemDecoration(requireContext(), verticalLayout.orientation)
-        binding.rvFinishedEvent.addItemDecoration(itemUpcomingEventDecoration)
-
-        mainViewModel.isLoading.observe(viewLifecycleOwner) {
-            showLoading(it)
-        }
-
-        mainViewModel.finishedEvent.observe(viewLifecycleOwner) { listItems ->
-            setFinishedEvent(listItems)
-        }
+        observeViewModel()
 
         return binding.root
     }
 
-    private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            binding.progressBar.visibility = View.VISIBLE
-        } else {
-            binding.progressBar.visibility = View.GONE
+    private fun setupSearchView() {
+        binding.searchView.setupWithSearchBar(binding.searchBar)
+
+        binding.searchView.editText.setOnEditorActionListener { _, _, _ ->
+            val keyword = binding.searchView.text.toString()
+            mainViewModel.searchEvent(keyword)
+
+            val currentText = binding.searchView.text
+
+            binding.searchView.hide()
+
+            binding.searchView.editText.text = currentText
+
+            true
         }
     }
 
-    private fun setFinishedEvent(listFinishedEvent: List<ListEventsItem>) {
-        val adapter = AdapterVerticalEvent()
-        adapter.submitList(listFinishedEvent)
-        binding.rvFinishedEvent.adapter = adapter
+    private fun setupRecyclerView() {
+        val verticalLayout = LinearLayoutManager(requireContext())
+        binding.rvFinishedEvent.layoutManager = verticalLayout
+        val itemFinishedEventDecoration =
+            DividerItemDecoration(requireContext(), verticalLayout.orientation)
+        binding.rvFinishedEvent.addItemDecoration(itemFinishedEventDecoration)
+        adapterVertical = AdapterVerticalEvent { eventId ->
+            val bundle = Bundle().apply {
+                if (eventId != null) {
+                    putInt("eventId", eventId)
+                }
+            }
+            findNavController().navigate(R.id.navigation_detail, bundle)
+        }
+        binding.rvFinishedEvent.adapter = adapterVertical
+    }
+
+    private fun observeViewModel() {
+        mainViewModel.isLoading.observe(viewLifecycleOwner) { showLoading(it) }
+
+        mainViewModel.finishedEvent.observe(viewLifecycleOwner) { listItems ->
+            adapterVertical.submitList(listItems)
+        }
+
+        mainViewModel.searchEvent.observe(viewLifecycleOwner) { listItems ->
+            adapterVertical.submitList(listItems)
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

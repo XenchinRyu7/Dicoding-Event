@@ -22,4 +22,10 @@
         android:name="com.saefulrdevs.dicodingevent.ui.finished_event.FinishedEventFragment"
         android:label="@string/title_finished_event"
         tools:layout="@layout/fragment_finished_event" />
+
+    <fragment
+        android:id="@+id/navigation_detail"
+        android:name="com.saefulrdevs.dicodingevent.ui.detail.DetailFragment"
+        android:label="@string/title_detail"
+        tools:layout="@layout/fragment_detail" />
 </navigation>

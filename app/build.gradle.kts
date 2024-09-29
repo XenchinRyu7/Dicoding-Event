@@ -59,6 +59,6 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.logging.interceptor)
 
-    // shimmering loading
-    implementation (libs.shimmer)
+    // splashscreen
+    implementation(libs.androidx.core.splashscreen)
 }

@@ -11,7 +11,7 @@ data class EventDetailResponse(
 	val message: String? = null,
 
 	@field:SerializedName("event")
-	val event: Event? = null
+	val event: Event = Event()
 )
 
 data class Event(

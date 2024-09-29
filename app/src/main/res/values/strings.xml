@@ -7,4 +7,9 @@
     <string name="title_recommendation_event">Recommendation event for you!</string>
     <string name="search_event">Cari Event</string>
     <string name="image_event">Gambar Acara</string>
+    <string name="title_detail">Detail Event</string>
+    <string name="go_to_event">Go to Event</string>
+    <string name="event_time">Waktu: %1$s</string>
+    <string name="quota_remaining">Sisa Kuota: %1$d</string>
+    <string name="refresh">Refresh</string>
 </resources>
