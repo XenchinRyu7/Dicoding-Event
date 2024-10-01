@@ -9,11 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.saefulrdevs.dicodingevent.R
-import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
-import com.saefulrdevs.dicodingevent.data.local.dataStore
 import com.saefulrdevs.dicodingevent.databinding.FragmentDetailBinding
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
 import com.saefulrdevs.dicodingevent.viewmodel.ViewModelFactory
@@ -22,17 +20,15 @@ class DetailFragment : Fragment() {
 
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
-
-        val pref = SettingPreferences.getInstance(requireContext().dataStore)
-        mainViewModel =
-            ViewModelProvider(this, ViewModelFactory(pref))[MainViewModel::class.java]
 
         val eventId = arguments?.getInt("eventId")
 

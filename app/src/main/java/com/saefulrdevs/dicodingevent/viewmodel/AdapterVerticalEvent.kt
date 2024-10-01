@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.saefulrdevs.dicodingevent.data.response.ListEventsItem
+import com.saefulrdevs.dicodingevent.data.remote.response.ListEventsItem
 import com.saefulrdevs.dicodingevent.databinding.CardItemVerticalBinding
 import com.saefulrdevs.dicodingevent.utils.ListEventsDiffUtil
 

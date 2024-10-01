@@ -1,39 +1,33 @@
 package com.saefulrdevs.dicodingevent
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
-import com.saefulrdevs.dicodingevent.data.local.dataStore
 import com.saefulrdevs.dicodingevent.databinding.ActivityMainBinding
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
 import com.saefulrdevs.dicodingevent.viewmodel.ViewModelFactory
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels {
+        ViewModelFactory.getInstance(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val pref = SettingPreferences.getInstance(application.dataStore)
-        mainViewModel =
-            ViewModelProvider(this, ViewModelFactory(pref))[MainViewModel::class.java]
 
         mainViewModel.getThemeSettings().observe(this) { isDarkModeActive: Boolean ->
             if (isDarkModeActive) {

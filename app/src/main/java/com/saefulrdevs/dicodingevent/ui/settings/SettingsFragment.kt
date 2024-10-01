@@ -7,9 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.ViewModelProvider
-import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
-import com.saefulrdevs.dicodingevent.data.local.dataStore
+import androidx.fragment.app.viewModels
 import com.saefulrdevs.dicodingevent.databinding.FragmentSettingsBinding
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
 import com.saefulrdevs.dicodingevent.viewmodel.ViewModelFactory
@@ -19,18 +17,15 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding
 
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
-
-        val pref = SettingPreferences.getInstance(requireContext().dataStore)
-        mainViewModel =
-            ViewModelProvider(this, ViewModelFactory(pref))[MainViewModel::class.java]
-
 
         mainViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive: Boolean ->
             if (isDarkModeActive) {

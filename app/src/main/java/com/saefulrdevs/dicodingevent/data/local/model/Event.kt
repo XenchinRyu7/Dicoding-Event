@@ -1,4 +1,4 @@
-package com.saefulrdevs.dicodingevent.data.model
+package com.saefulrdevs.dicodingevent.data.local.model
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

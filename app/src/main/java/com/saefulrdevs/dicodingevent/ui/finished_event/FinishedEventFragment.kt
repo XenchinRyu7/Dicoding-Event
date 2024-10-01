@@ -5,13 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.saefulrdevs.dicodingevent.R
-import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
-import com.saefulrdevs.dicodingevent.data.local.dataStore
 import com.saefulrdevs.dicodingevent.databinding.FragmentFinishedEventBinding
 import com.saefulrdevs.dicodingevent.viewmodel.AdapterVerticalEvent
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
@@ -21,7 +19,9 @@ class FinishedEventFragment : Fragment() {
 
     private var _binding: FragmentFinishedEventBinding? = null
     private val binding get() = _binding
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels {
+        ViewModelFactory.getInstance(requireActivity())
+    }
     private lateinit var adapterVertical: AdapterVerticalEvent
 
     override fun onCreateView(
@@ -30,10 +30,6 @@ class FinishedEventFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFinishedEventBinding.inflate(inflater, container, false)
-
-        val pref = SettingPreferences.getInstance(requireContext().dataStore)
-        mainViewModel =
-            ViewModelProvider(this, ViewModelFactory(pref))[MainViewModel::class.java]
 
         setupSearchView()
         setupRecyclerView()

@@ -1,4 +1,4 @@
-package com.saefulrdevs.dicodingevent.data.database
+package com.saefulrdevs.dicodingevent.data.local.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -6,7 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.saefulrdevs.dicodingevent.data.model.FavoriteEvent
+import com.saefulrdevs.dicodingevent.data.local.model.FavoriteEvent
 
 @Dao
 interface FavoriteEventDao {

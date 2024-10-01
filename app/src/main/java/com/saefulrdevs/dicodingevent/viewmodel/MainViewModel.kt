@@ -1,23 +1,21 @@
 package com.saefulrdevs.dicodingevent.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
-import com.saefulrdevs.dicodingevent.data.response.Event
-import com.saefulrdevs.dicodingevent.data.response.EventDetailResponse
-import com.saefulrdevs.dicodingevent.data.response.EventResponse
-import com.saefulrdevs.dicodingevent.data.response.ListEventsItem
-import com.saefulrdevs.dicodingevent.data.retrofit.ApiConfig
+import com.saefulrdevs.dicodingevent.data.local.model.FavoriteEvent
+import com.saefulrdevs.dicodingevent.data.repository.EventRepository
+import com.saefulrdevs.dicodingevent.data.remote.response.Event
+import com.saefulrdevs.dicodingevent.data.remote.response.ListEventsItem
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-class MainViewModel(private val pref: SettingPreferences) : ViewModel() {
+class MainViewModel(
+    private val pref: SettingPreferences,
+    private val eventRepository: EventRepository
+) : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
@@ -43,106 +41,76 @@ class MainViewModel(private val pref: SettingPreferences) : ViewModel() {
 
     fun getUpcomingEvent() {
         _isLoading.value = true
-        val getUpcomingEvent = ApiConfig.getApiService().getAllActiveEvent()
-        getUpcomingEvent.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(
-                call: Call<EventResponse>,
-                response: Response<EventResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _upcomingEvent.value = response.body()?.listEvents
-                    clearErrorMessage()
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                    _errorMessage.value = "Failed to load data from API"
-                }
+        viewModelScope.launch {
+            val result = eventRepository.getUpcomingEvent()
+            _isLoading.value = false
+            result.onSuccess {
+                _upcomingEvent.value = it
+                clearErrorMessage()
+            }.onFailure {
+                _errorMessage.value = it.message
             }
-
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message.toString()}")
-                _errorMessage.value = "No internet connection or server error"
-            }
-        })
+        }
     }
 
     fun getFinishedEvent() {
         _isLoading.value = true
-        val getFinishedEvent = ApiConfig.getApiService().getAllFinishedEvent()
-        getFinishedEvent.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(
-                call: Call<EventResponse>,
-                response: Response<EventResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _finishedEvent.value = response.body()?.listEvents
-                    clearErrorMessage()
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                    _errorMessage.value = "Failed to load data from API"
-                }
+        viewModelScope.launch {
+            val result = eventRepository.getFinishedEvent()
+            _isLoading.value = false
+            result.onSuccess {
+                _finishedEvent.value = it
+                clearErrorMessage()
+            }.onFailure {
+                _errorMessage.value = it.message
             }
-
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message.toString()}")
-                _errorMessage.value = "No internet connection or server error"
-            }
-        })
+        }
     }
 
     fun getDetailEvent(id: Int) {
         _isLoading.value = true
-        val getDetailEvent = ApiConfig.getApiService().getDetailEvent(id)
-        getDetailEvent.enqueue(object : Callback<EventDetailResponse> {
-            override fun onResponse(
-                call: Call<EventDetailResponse>,
-                response: Response<EventDetailResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _detailEvent.value = response.body()?.event
-                    clearErrorMessage()
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                    _errorMessage.value = "Failed to load data from API"
-                }
+        viewModelScope.launch {
+            val result = eventRepository.getDetailEvent(id)
+            _isLoading.value = false
+            result.onSuccess {
+                _detailEvent.value = it
+                clearErrorMessage()
+            }.onFailure {
+                _errorMessage.value = it.message
             }
-
-            override fun onFailure(call: Call<EventDetailResponse>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message.toString()}")
-                _errorMessage.value = "No internet connection or server error"
-            }
-        })
+        }
     }
 
     fun searchEvent(keyword: String) {
         _isLoading.value = true
-        val getSearchEvent = ApiConfig.getApiService().searchEvent(keyword)
-        getSearchEvent.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(
-                call: Call<EventResponse>,
-                response: Response<EventResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _searchEvent.value = response.body()?.listEvents
-                    clearErrorMessage()
-                } else {
-                    Log.e(TAG, "onFailure: ${response.message()}")
-                    _errorMessage.value = "Failed to load data from API"
-                }
+        viewModelScope.launch {
+            val result = eventRepository.searchEvent(keyword)
+            _isLoading.value = false
+            result.onSuccess {
+                _searchEvent.value = it
+                clearErrorMessage()
+            }.onFailure {
+                _errorMessage.value = it.message
             }
+        }
+    }
 
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                _isLoading.value = false
-                Log.e(TAG, "onFailure: ${t.message.toString()}")
-                _errorMessage.value = "No internet connection or server error"
+    fun insertFavoriteEvent(event: FavoriteEvent) {
+        viewModelScope.launch {
+            val success = eventRepository.insertFavoriteEvent(event)
+            if (!success) {
+                _errorMessage.value = "Failed to insert favorite event"
             }
-        })
+        }
+    }
+
+    fun deleteFavoriteEvent(event: FavoriteEvent) {
+        viewModelScope.launch {
+            val success = eventRepository.deleteFavoriteEvent(event)
+            if (!success) {
+                _errorMessage.value = "Failed to delete favorite event"
+            }
+        }
     }
 
     fun getThemeSettings(): LiveData<Boolean> {

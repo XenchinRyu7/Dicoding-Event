@@ -1,12 +1,12 @@
-package com.saefulrdevs.dicodingevent.data.database
+package com.saefulrdevs.dicodingevent.data.local.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.saefulrdevs.dicodingevent.data.model.FavoriteEvent
+import com.saefulrdevs.dicodingevent.data.local.model.FavoriteEvent
 
-@Database(entities = [FavoriteEvent::class], version = 1)
+@Database(entities = [FavoriteEvent::class], version = 1, exportSchema = false)
 abstract class FavoriteEventRoomDatabase : RoomDatabase() {
     abstract fun favoriteEventDao(): FavoriteEventDao
 

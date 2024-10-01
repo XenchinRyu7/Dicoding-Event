@@ -1,4 +1,4 @@
-package com.saefulrdevs.dicodingevent.data.response
+package com.saefulrdevs.dicodingevent.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
