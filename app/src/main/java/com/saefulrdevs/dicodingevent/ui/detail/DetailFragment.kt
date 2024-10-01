@@ -9,23 +9,30 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.saefulrdevs.dicodingevent.R
+import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
+import com.saefulrdevs.dicodingevent.data.local.dataStore
 import com.saefulrdevs.dicodingevent.databinding.FragmentDetailBinding
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
+import com.saefulrdevs.dicodingevent.viewmodel.ViewModelFactory
 
 class DetailFragment : Fragment() {
 
     private var _binding: FragmentDetailBinding? = null
-    private val binding get() = _binding!!
-    private val mainViewModel by viewModels<MainViewModel>()
+    private val binding get() = _binding
+    private lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
+
+        val pref = SettingPreferences.getInstance(requireContext().dataStore)
+        mainViewModel =
+            ViewModelProvider(this, ViewModelFactory(pref))[MainViewModel::class.java]
 
         val eventId = arguments?.getInt("eventId")
 
@@ -34,26 +41,30 @@ class DetailFragment : Fragment() {
         }
 
         mainViewModel.detailEvent.observe(viewLifecycleOwner) { event ->
-            binding.tvEventName.text = event.name
-            binding.tvOwnerName.text = event.ownerName
-            binding.tvEventTime.text = getString(R.string.event_time, event.beginTime)
-            val remainingQuota = event.quota?.minus(event.registrants ?: 0) ?: 0
-            binding.tvQuota.text = getString(R.string.quota_remaining, remainingQuota)
+            binding?.apply {
+                tvEventName.text = event.name
+                tvEventName.text = event.name
+                tvOwnerName.text = event.ownerName
+                tvEventTime.text = getString(R.string.event_time, event.beginTime)
+                val remainingQuota = event.quota?.minus(event.registrants ?: 0) ?: 0
+                tvQuota.text = getString(R.string.quota_remaining, remainingQuota)
 
-            binding.tvDescription.text = event.description?.let {
-                HtmlCompat.fromHtml(
-                    it,
-                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                )
+                tvDescription.text = event.description?.let {
+                    HtmlCompat.fromHtml(
+                        it,
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                }
+                btnEventLink.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.link))
+                    startActivity(intent)
+                }
             }
 
-            Glide.with(this)
-                .load(event.mediaCover)
-                .into(binding.ivMediaCover)
-
-            binding.btnEventLink.setOnClickListener {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(event.link))
-                startActivity(intent)
+            binding?.ivMediaCover?.let {
+                Glide.with(this)
+                    .load(event.mediaCover)
+                    .into(it)
             }
         }
 
@@ -63,25 +74,27 @@ class DetailFragment : Fragment() {
 
         mainViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
             if (!errorMessage.isNullOrEmpty()) {
-                binding.handlingLayout.visibility = View.VISIBLE
-                binding.tvErrorMessage.text = errorMessage
-                binding.btnRefresh.visibility = View.VISIBLE
-
-                binding.btnRefresh.setOnClickListener {
-                    if (eventId != null) {
-                        mainViewModel.getDetailEvent(eventId)
+                binding?.apply {
+                    handlingLayout.visibility = View.VISIBLE
+                    tvErrorMessage.text = errorMessage
+                    btnRefresh.visibility = View.VISIBLE
+                    btnRefresh.setOnClickListener {
+                        if (eventId != null) {
+                            mainViewModel.getDetailEvent(eventId)
+                        }
                     }
                 }
+
             } else {
-                binding.handlingLayout.visibility = View.GONE
+                binding?.handlingLayout?.visibility = View.GONE
             }
         }
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        return binding.root
+        return requireNotNull(binding?.root) { "Binding is null!" }
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding?.progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

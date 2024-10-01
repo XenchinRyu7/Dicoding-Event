@@ -4,16 +4,20 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
 import com.saefulrdevs.dicodingevent.data.response.Event
 import com.saefulrdevs.dicodingevent.data.response.EventDetailResponse
 import com.saefulrdevs.dicodingevent.data.response.EventResponse
 import com.saefulrdevs.dicodingevent.data.response.ListEventsItem
 import com.saefulrdevs.dicodingevent.data.retrofit.ApiConfig
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MainViewModel : ViewModel() {
+class MainViewModel(private val pref: SettingPreferences) : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
@@ -29,7 +33,7 @@ class MainViewModel : ViewModel() {
     val searchEvent: LiveData<List<ListEventsItem>> = _searchEvent
 
     companion object {
-        private const val TAG = "HomeViewModel"
+        private const val TAG = "MainViewModel"
     }
 
     init {
@@ -139,6 +143,16 @@ class MainViewModel : ViewModel() {
                 _errorMessage.value = "No internet connection or server error"
             }
         })
+    }
+
+    fun getThemeSettings(): LiveData<Boolean> {
+        return pref.getThemeSetting().asLiveData()
+    }
+
+    fun saveThemeSetting(isDarkModeActive: Boolean) {
+        viewModelScope.launch {
+            pref.saveThemeSetting(isDarkModeActive)
+        }
     }
 
     fun clearErrorMessage() {

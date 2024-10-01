@@ -5,20 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.saefulrdevs.dicodingevent.R
+import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
+import com.saefulrdevs.dicodingevent.data.local.dataStore
 import com.saefulrdevs.dicodingevent.databinding.FragmentFinishedEventBinding
 import com.saefulrdevs.dicodingevent.viewmodel.AdapterVerticalEvent
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
+import com.saefulrdevs.dicodingevent.viewmodel.ViewModelFactory
 
 class FinishedEventFragment : Fragment() {
 
     private var _binding: FragmentFinishedEventBinding? = null
-    private val binding get() = _binding!!
-    private val mainViewModel by viewModels<MainViewModel>()
+    private val binding get() = _binding
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var adapterVertical: AdapterVerticalEvent
 
     override fun onCreateView(
@@ -28,46 +31,53 @@ class FinishedEventFragment : Fragment() {
     ): View {
         _binding = FragmentFinishedEventBinding.inflate(inflater, container, false)
 
+        val pref = SettingPreferences.getInstance(requireContext().dataStore)
+        mainViewModel =
+            ViewModelProvider(this, ViewModelFactory(pref))[MainViewModel::class.java]
+
         setupSearchView()
         setupRecyclerView()
-
         observeViewModel()
 
-        return binding.root
+        return requireNotNull(binding?.root) { "Binding is null!" }
     }
 
     private fun setupSearchView() {
-        binding.searchView.setupWithSearchBar(binding.searchBar)
+        binding?.apply {
+            searchView.setupWithSearchBar(binding?.searchBar)
 
-        binding.searchView.editText.setOnEditorActionListener { _, _, _ ->
-            val keyword = binding.searchView.text.toString()
-            mainViewModel.searchEvent(keyword)
+            searchView.editText.setOnEditorActionListener { _, _, _ ->
+                val keyword = searchView.text.toString()
+                mainViewModel.searchEvent(keyword)
 
-            val currentText = binding.searchView.text
+                val currentText = searchView.text
 
-            binding.searchView.hide()
+                searchView.hide()
 
-            binding.searchView.editText.text = currentText
+                searchView.editText.text = currentText
 
-            true
+                true
+            }
         }
     }
 
     private fun setupRecyclerView() {
-        val verticalLayout = LinearLayoutManager(requireContext())
-        binding.rvFinishedEvent.layoutManager = verticalLayout
-        val itemFinishedEventDecoration =
-            DividerItemDecoration(requireContext(), verticalLayout.orientation)
-        binding.rvFinishedEvent.addItemDecoration(itemFinishedEventDecoration)
-        adapterVertical = AdapterVerticalEvent { eventId ->
-            val bundle = Bundle().apply {
-                if (eventId != null) {
-                    putInt("eventId", eventId)
+        binding?.apply {
+            val verticalLayout = LinearLayoutManager(requireContext())
+            rvFinishedEvent.layoutManager = verticalLayout
+            val itemFinishedEventDecoration =
+                DividerItemDecoration(requireContext(), verticalLayout.orientation)
+            rvFinishedEvent.addItemDecoration(itemFinishedEventDecoration)
+            adapterVertical = AdapterVerticalEvent { eventId ->
+                val bundle = Bundle().apply {
+                    if (eventId != null) {
+                        putInt("eventId", eventId)
+                    }
                 }
+                findNavController().navigate(R.id.navigation_detail, bundle)
             }
-            findNavController().navigate(R.id.navigation_detail, bundle)
+            rvFinishedEvent.adapter = adapterVertical
         }
-        binding.rvFinishedEvent.adapter = adapterVertical
     }
 
     private fun observeViewModel() {
@@ -83,7 +93,7 @@ class FinishedEventFragment : Fragment() {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding?.progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     override fun onDestroyView() {

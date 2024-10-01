@@ -1,9 +1,12 @@
 package com.saefulrdevs.dicodingevent.data.retrofit
 
+import com.saefulrdevs.dicodingevent.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
+const val BASE_URL = BuildConfig.BASE_URL
 
 class ApiConfig {
     companion object {
@@ -14,7 +17,7 @@ class ApiConfig {
                 .addInterceptor(loggingInterceptor)
                 .build()
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://event-api.dicoding.dev")
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()

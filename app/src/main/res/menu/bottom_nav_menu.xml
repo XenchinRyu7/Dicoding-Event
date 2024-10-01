@@ -16,4 +16,13 @@
         android:icon="@drawable/ic_event_done_list_24dp"
         android:title="@string/title_finished_event" />
 
+    <item
+        android:id="@+id/navigation_favorite_event"
+        android:icon="@drawable/ic_star"
+        android:title="@string/title_favorite_event" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/title_settings" />
 </menu>

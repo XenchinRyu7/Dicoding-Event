@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.saefulrdevs.dicodingevent.R
+import com.saefulrdevs.dicodingevent.data.local.SettingPreferences
+import com.saefulrdevs.dicodingevent.data.local.dataStore
 import com.saefulrdevs.dicodingevent.data.response.ListEventsItem
 import com.saefulrdevs.dicodingevent.databinding.FragmentHomeBinding
 import com.saefulrdevs.dicodingevent.utils.UiHandler.handleError
@@ -17,13 +19,14 @@ import com.saefulrdevs.dicodingevent.utils.UiHandler.showLoading
 import com.saefulrdevs.dicodingevent.viewmodel.AdapterHorizontalEvent
 import com.saefulrdevs.dicodingevent.viewmodel.AdapterVerticalEvent
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
+import com.saefulrdevs.dicodingevent.viewmodel.ViewModelFactory
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
-    private val mainViewModel by viewModels<MainViewModel>()
+    private lateinit var mainViewModel: MainViewModel
     private lateinit var adapterVertical: AdapterVerticalEvent
     private lateinit var adapterHorizontal: AdapterHorizontalEvent
 
@@ -34,32 +37,38 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        val pref = SettingPreferences.getInstance(requireContext().dataStore)
+
+        mainViewModel =
+            ViewModelProvider(this, ViewModelFactory(pref))[MainViewModel::class.java]
+
         setupRecyclerViews()
         setupAdapters()
         observeViewModel()
 
-        return binding.root
+        return requireNotNull(binding?.root) { "Binding is null!" }
     }
 
     private fun setupRecyclerViews() {
-        val horizontalLayout =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.rvUpcomingEvent.layoutManager = horizontalLayout
-        binding.rvUpcomingEvent.addItemDecoration(
-            DividerItemDecoration(
-                requireContext(),
-                horizontalLayout.orientation
+        binding?.apply {
+            val horizontalLayout =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            rvUpcomingEvent.layoutManager = horizontalLayout
+            rvUpcomingEvent.addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    horizontalLayout.orientation
+                )
             )
-        )
-
-        val verticalLayout = LinearLayoutManager(requireContext())
-        binding.rvFinishedEvent.layoutManager = verticalLayout
-        binding.rvFinishedEvent.addItemDecoration(
-            DividerItemDecoration(
-                requireContext(),
-                verticalLayout.orientation
+            val verticalLayout = LinearLayoutManager(requireContext())
+            rvFinishedEvent.layoutManager = verticalLayout
+            rvFinishedEvent.addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    verticalLayout.orientation
+                )
             )
-        )
+        }
     }
 
     private fun setupAdapters() {
@@ -81,35 +90,39 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.navigation_detail, bundle)
         }
 
-        binding.rvUpcomingEvent.adapter = adapterHorizontal
-        binding.rvFinishedEvent.adapter = adapterVertical
+        binding?.apply {
+            rvUpcomingEvent.adapter = adapterHorizontal
+            rvFinishedEvent.adapter = adapterVertical
+        }
+
     }
 
     private fun observeViewModel() {
+        binding?.apply {
+            mainViewModel.upcomingEvent.observe(viewLifecycleOwner) { listItems ->
+                setUpcomingEvent(listItems)
+                mainViewModel.clearErrorMessage()
+            }
 
-        mainViewModel.upcomingEvent.observe(viewLifecycleOwner) { listItems ->
-            setUpcomingEvent(listItems)
-            mainViewModel.clearErrorMessage()
-        }
+            mainViewModel.finishedEvent.observe(viewLifecycleOwner) { listItems ->
+                setFinishedEvent(listItems)
+                mainViewModel.clearErrorMessage()
+            }
+            mainViewModel.isLoading.observe(viewLifecycleOwner) {
+                showLoading(it, progressBar)
+            }
 
-        mainViewModel.finishedEvent.observe(viewLifecycleOwner) { listItems ->
-            setFinishedEvent(listItems)
-            mainViewModel.clearErrorMessage()
-        }
-        mainViewModel.isLoading.observe(viewLifecycleOwner) {
-            showLoading(it, binding.progressBar)
-        }
-
-        mainViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
-            handleError(
-                isError = errorMessage != null,
-                message = errorMessage,
-                errorTextView = binding.tvErrorMessage,
-                refreshButton = binding.btnRefresh,
-                recyclerView = binding.rvFinishedEvent
-            ) {
-                mainViewModel.getUpcomingEvent()
-                mainViewModel.getFinishedEvent()
+            mainViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
+                handleError(
+                    isError = errorMessage != null,
+                    message = errorMessage,
+                    errorTextView = tvErrorMessage,
+                    refreshButton = btnRefresh,
+                    recyclerView = rvFinishedEvent
+                ) {
+                    mainViewModel.getUpcomingEvent()
+                    mainViewModel.getFinishedEvent()
+                }
             }
         }
     }

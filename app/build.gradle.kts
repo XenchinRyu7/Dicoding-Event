@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -15,6 +17,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "BASE_URL", "\"https://event-api.dicoding.dev/\"")
     }
 
     buildTypes {
@@ -35,6 +38,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -61,4 +65,11 @@ dependencies {
 
     // splashscreen
     implementation(libs.androidx.core.splashscreen)
+
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.jetbrains.kotlinx.coroutines.android)
+
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.room.compiler)
 }
