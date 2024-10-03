@@ -17,6 +17,8 @@
     <string name="title_dark_mode">Dark Mode"</string>
     <string name="dark_mode_description">Enable Dark Mode</string>
     <string name="title_daily_reminder">Daily Reminder</string>
-    <string name="daily_reminder_description">Enable Notification</string>
+    <string name="daily_reminder_description">Enable Notification, notification will appear every day at 8am</string>
     <string name="enable">Enable</string>
+    <string name="love_button">Mark As Favorite</string>
+    <string name="favorite_event_description">Your list Favorite Event</string>
 </resources>

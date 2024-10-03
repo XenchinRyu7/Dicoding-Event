@@ -10,8 +10,8 @@ material = "1.12.0"
 constraintlayout = "2.1.4"
 lifecycleLivedataKtx = "2.8.6"
 lifecycleViewmodelKtx = "2.8.6"
-navigationFragmentKtx = "2.8.1"
-navigationUiKtx = "2.8.1"
+navigationFragmentKtx = "2.8.2"
+navigationUiKtx = "2.8.2"
 converterGson = "2.9.0"
 glide = "4.16.0"
 loggingInterceptor = "4.11.0"
@@ -25,6 +25,7 @@ roomCompiler = "2.6.1"
 roomRuntime = "2.6.1"
 ksp = "2.0.20-1.0.24"
 roomKtx = "2.6.1"
+workRuntimeKtx = "2.9.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +51,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,6 +1,7 @@
 package com.saefulrdevs.dicodingevent.data.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.saefulrdevs.dicodingevent.data.local.database.FavoriteEventDao
 import com.saefulrdevs.dicodingevent.data.local.model.FavoriteEvent
 import com.saefulrdevs.dicodingevent.data.remote.response.Event
@@ -85,6 +86,14 @@ class EventRepository(
             Log.e("Delete EventRepository", "Error deleting favorite event: ${e.message}")
             false
         }
+    }
+
+    fun getAllFavoriteEvent(): LiveData<List<FavoriteEvent>> {
+        return favoriteEventDao.getAllFavoriteEvent()
+    }
+
+    fun getFavoriteEventById(eventId: Int): LiveData<FavoriteEvent> {
+        return favoriteEventDao.getFavoriteEventById(eventId)
     }
 
     companion object {

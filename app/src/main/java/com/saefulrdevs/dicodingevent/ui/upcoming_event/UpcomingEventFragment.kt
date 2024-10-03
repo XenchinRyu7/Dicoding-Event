@@ -83,7 +83,6 @@ class UpcomingEventFragment : Fragment() {
                     recyclerView = rvUpcomingEvent
                 ) {
                     mainViewModel.getUpcomingEvent()
-                    mainViewModel.getFinishedEvent()
                 }
             }
         }

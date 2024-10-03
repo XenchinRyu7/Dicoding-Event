@@ -12,12 +12,12 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.saefulrdevs.dicodingevent.R
+import com.saefulrdevs.dicodingevent.data.local.model.FavoriteEvent
 import com.saefulrdevs.dicodingevent.databinding.FragmentDetailBinding
 import com.saefulrdevs.dicodingevent.viewmodel.MainViewModel
 import com.saefulrdevs.dicodingevent.viewmodel.ViewModelFactory
 
 class DetailFragment : Fragment() {
-
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding
     private val mainViewModel: MainViewModel by viewModels {
@@ -34,6 +34,31 @@ class DetailFragment : Fragment() {
 
         if (eventId != null) {
             mainViewModel.getDetailEvent(eventId)
+        }
+
+        eventId?.let { id ->
+            mainViewModel.getFavoriteEventById(id).observe(viewLifecycleOwner) { favoriteEvent ->
+                binding?.fabLove?.setImageResource(
+                    if (favoriteEvent == null) R.drawable.ic_favorite else R.drawable.ic_favorite_filled
+                )
+
+                binding?.fabLove?.setOnClickListener {
+                    val currentEvent = mainViewModel.detailEvent.value
+                    currentEvent?.let { event ->
+                        if (favoriteEvent == null) {
+                            val favorite = FavoriteEvent(
+                                eventId = event.id,
+                                name = event.name,
+                                description = event.summary,
+                                image = event.imageLogo
+                            )
+                            mainViewModel.insertFavoriteEvent(favorite)
+                        } else {
+                            mainViewModel.deleteFavoriteEvent(favoriteEvent)
+                        }
+                    }
+                }
+            }
         }
 
         mainViewModel.detailEvent.observe(viewLifecycleOwner) { event ->
